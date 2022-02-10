@@ -1,100 +1,200 @@
+/*========================= 
+========= GENERAL =========
+===========================*/
 
 .App {
-  font-family: Helvetica, sans-serif;
-  font-weight: 200;
-  text-align: center;
+	font-family: 'Montserrat', sans-serif;
 }
 
 .App-header {
-  color: white;
-  border-bottom: black solid 1px;
-   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  background-color: #90a9cf;
-  width: 100vw;
-  height: 120px;
-    box-shadow: 1px 3px 4px 1px grey;
-  position: fixed;
+	align-items: center;
+	border-bottom: black solid 1px;
+	color: black;
+	display: flex;
+	flex-direction: column;
+	font-size: 22px;
+	height: 100vh;
+	justify-content: center;
+	width: 100vw;
+  display: fixed;
   z-index: 55;
-  padding-right: 12vw;
-  font-size: 22px;
 }
 
 .App-link {
-  color: black;
+	color: black;
 }
+
+/*========================= 
+========= SIDEBAR =========
+===========================*/
 
 .sidebar {
-  background-color: #7f53ac;
-  background-image: linear-gradient(315deg, #7f53ac 0%, #647dee 74%);
-  color: white;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  border-left: 1px solid gainsboro;
-  right: 0;
-  top: 0px;
-  font-size: 22px;
-  width: 12vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;;
+	align-items: center;
+	background-color: black;
+	border-left: 1px solid gainsboro;
+	color: #c1c3c6;
+	display: flex;
+	flex-direction: column;
+	font-size: 22px;
+	height: 100vh;
+	justify-content: flex-start;
+	padding-top: 15px;
+	position: fixed;
+	right: 0;
+	top: 0px;
+	width: 15vw;
+}
+.sidebar h3,
+.sidebar a {
+	padding-left: 15px;
 }
 
-.sidebar button {
-  margin-bottom: 15%;
-  border-radius: 10px;
-  margin-top: 100px;
 
+.sidebar h2 {
+	color: white;
+	display: flex;
+	font-weight: 500;
+	margin-bottom: 15px;
 }
-button {
-  border-radius: 10px;
-  width: 200px;
-  color: black;
-  border:  linear-gradient(315deg, #7f53ac 0%, #647dee 74%) solid 1px;
+
+.artists {
+	align-items: left;
+	display: flex;
+	flex-direction: column;
+	font-size: 20px;
+	justify-content: flex-start;
+	margin: auto;
+	margin-top: 25px;
+	overflow: scroll;
+	width: 100%;
 }
+
+/*========================= 
+========= TRACKS =========
+===========================*/
 
 .recentlyPlayedTracks {
-  margin-top: 150px;
-  height: 100%;
-  width: 75vw;
- 
-  display: flex;
-  flex-wrap: wrap; 
-  justify-content: center;
-  margin-right: 12vw;
-
- 
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin-right: 12vw;
+	min-height: 100%;
+	width: 75vw;
 }
 
 .recentlyPlayedTracks div {
-  box-shadow: 1px 3px 4px 1px grey;
+	background-color: #d4418e;
+	background-image: linear-gradient(315deg, #d4418e 0%, #0652c5 74%);
+	border-radius: 10px;
+	box-shadow: 1px 3px 4px 1px grey;
+	margin: 15px 25px;
+}
 
-  border-radius: 10px;
-  margin: 15px 25px;
+.trackCard {
+	align-items: center;
+	background: white !important;
+	color: black;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding-top: 10px;
+	width: 250px;
 }
 
 .tracks {
-  border-radius: 10px;
-  height: 300px;
-   width: 300px;
+	border-radius: 10px;
+	height: 300px;
+	width: 300px;
+}
 
+.trackBody {
+	align-items: center;
+	display: flex;
+	justify-content: space-around;
+	overflow: hidden;
+}
+
+
+/*========================= 
+========= BUTTONS =========
+===========================*/
+
+ button {
+	background-color: #1aa34a;
+	border: 1px solid white;
+	border-radius: 10px;
+	color: black;
+	color: white;
+	width: 200px;
 }
 
 .headerBtns {
-display:"flex";
- margin: "10px";
+	align-items: center;
+	display: "flex";
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin: "10px";
 }
 
 .headerBtns button {
-  margin: 5px;
-  border-radius: 10px;
+	border-radius: 10px;
+	margin: 5px;
+}
+
+.headerBtns a {
+	background-color: #1aa34a;
+	border: 1px solid white;
+	border-radius: 10px;
+	color: black;
+	color: white;
+	margin: 10px;
+	padding: 10px;
+	text-decoration: none;
+	width: 200px;
+}
+
+.headerBtns button:hover,
+.headerBtns a:hover,
+.sidebar button:hover {
+	background-color: white;
+	border: 1px solid #1aa34a;
+	color: black;
+}
+
+
+.sidebarBtns {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	margin: 0 auto 25px;
+	padding: 10px;
+}
+
+.sidebar button {
+	background-color: rgba(255, 255, 255, 0);
+	border-radius: 10px;
+	margin: 15px 15px 0 15px;
 }
 
 a:hover {
-  cursor: pointer;
+	color: #1aa34a !important;
+	cursor: pointer;
+}
+
+/*========================= 
+========= MOBILE =========
+ ==========================*/
+
+@media screen and (max-width: 600px)
+{
+	.sidebar
+	{
+		display: none;
+	}
+	.recentlyPlayedTracks
+	{
+		margin-right: 0;
+	}
 }
