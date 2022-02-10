@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import './App.css';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function App() {
@@ -22,18 +23,24 @@ function App() {
   const searchTracks = async (e) => {
     e.preventDefault()
     console.log(token)
-    await axios.get("https://api.spotify.com/v1/me/player/recently-played?limit=10&after=1484811043508", {
+    await axios.get("https://api.spotify.com/v1/me/player/recently-played?limit=10", {
       headers: {
         "Authorization": `Bearer ${token}`,
         "Accept": "application/json",
         "Content-Type": "application/json"
       }
-    }).then(response => setTrackList(response.data.items))
+    }).then(response => createTrackList(response.data.items))
    
+
 
   }
 
-
+const createTrackList = (tracks) => {
+ setTrackList(tracks.map(track => (
+     {'artist': track.track.artists[0].name, 'albumImgs': track.track.album.images, 'albumImg': track.track.album.images[0].url, 'trackId': track.track.id}
+  )))
+console.log(track)
+}
 
 
   // "https://api.spotify.com/v1/me/player/recently-played?limit=10&after=1484811043605" - H "Accept: application/json" - H "Content-Type: application/json"
@@ -63,61 +70,78 @@ function App() {
     setToken(token)
   }, [])
 
-  const logout = () => {``
+  const logout = () => {
     setToken("")
     window.localStorage.removeItem("token")
+    setTrackList([])
+
   }
 
   const renderTracks = () => {
 
     return track.map(track => (
-      <div key={track.track.id}>
-        {track.track.album.images ? <img src={track.track.album.images[0].url} alt="" style={{height: "300px", width: "300px", margin: "15px"}}/> : <div>No image</div>
+      <div artist={track.artist} key={track.trackId}>
+        {track.albumImgs ? <img src={track.albumImg} alt="" className="tracks"/> : <div>No image</div>
         }
-        {track.name}
+    
       </div>
       
     ))
     
   }
 
-  const filterSongs = () => {
-     
-  }
+const filterArtists = (e) => {
+
+  let newTrackList = []
+  for (let index = 0; index < track.length; index++) {
+    
+
+   
+   (track[index].artist == e.target.text) ? newTrackList.push(track[index])  : console.log(null)  
+ console.log(newTrackList)
+  
+}
+setTrackList(newTrackList)
+}
+
+  
+ 
 
     const renderArtists = () => {
-       return track.map(track => (
-      <div style={{marginTop: "10px", marginBottom: "10px"}} key={track.track.id}>
-        <a onClick={filterSongs}>{track.track.artists[0].name }</a>
-        
-      </div>
-    ))
+  
+       return    <><button type={"submit"} onClick={searchTracks}>Reset</button> {track.map(track => (
+
+        <a key={track.trackId} onClick={filterArtists} style={{marginTop: "10px", marginBottom: "10px"}} >{track.artist}</a>
+      
+    ))}
+    </>
   }
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Spotify React </h1>
+        <h1>Spotify React:</h1>
+        <div className="headerBtns">
         {!token ?
           <a href={`${url}`}>Login to Spotify</a> : <button onClick={logout}>Logout</button>
         }
         {token ?
-          <form onSubmit={searchTracks}>
-            <input type="text" onChange={e => setSearchKey(e.target.value)} />
-            <button type={"submit"}> Search</button>
-          </form>
-          : <h2>Please login</h2>
+          <button onClick={searchTracks}>Load</button>
+                  : <h2>Please login</h2>
         }
-        <div style={{overflow:"hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <div style={{height:"100%", overflow:"hidden", display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        </div>
+          </header>
+        <div style={{overflow:"hidden", display: "flex", justifyContent: "space-around", alignItems: "center"}}>
+        <div className="recentlyPlayedTracks">
         {renderTracks()}
         </div>
-        <div>
-        {renderArtists()}
+        <div className="sidebar" >
+     
+        {    (track.length > 0) ? renderArtists() : null}
         </div>
         </div>
 
-      </header>
+    
     </div >
   );
 }
