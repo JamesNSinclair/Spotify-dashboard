@@ -1,3 +1,7 @@
+# Testing
+
+Project was created using React function components with hooks, due to the nature of the library, unit testing was utilised throughout. However, given more time, 3rd party frameworks could have been implemented, such as Jest.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
