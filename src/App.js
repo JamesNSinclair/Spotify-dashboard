@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useInterval } from "react"
 import './App.css';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,25 +6,24 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 
-  var generateRandomString = function (length) {
-    var text = '';
-    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  
-    for (var i = 0; i < length; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-  };
+/*========================= 
+==== Variables for API ====
+===========================*/
 
-  const stateKey = "banana"
+  const stateKey = "currentState"
   const client_id = 'ef2cbefe26f04e3ca1046c1d158c8b8c';
   const redirect_uri = 'http://localhost:3000/callback';
+
+/*========================= 
+========= State ===========
+===========================*/
 
 
   const [token, setToken] = useState("")
   const [searchKey, setSearchKey] = useState("")
-  const [track, setTrackList] = useState(JSON.parse(localStorage.getItem('prevState')) || [])
+  const [recentTracks, setTrackList] = useState(JSON.parse(localStorage.getItem('prevState')) || [])
   const [prevState, setPrevState] = useState(localStorage.getItem('prevState'));
+  const titleScreen = useRef()
 
   useEffect(() => {
     localStorage.setItem('prevState', prevState)
@@ -32,8 +31,7 @@ function App() {
 
   const searchTracks = async (e) => {
     e.preventDefault()
-    console.log(token)
-    await axios.get("https://api.spotify.com/v1/me/player/recently-played?limit=20", {
+        await axios.get("https://api.spotify.com/v1/me/player/recently-played?limit=20", {
       headers: {
         "Authorization": `Bearer ${token}`,
         "Accept": "application/json",
@@ -42,19 +40,36 @@ function App() {
     }).then(response => createTrackList(response.data.items))
   }
 
-  const createTrackList = (tracks) => {
-    setTrackList(tracks.map(track => (
+  const createTrackList = (recentTracks) => {
+    setTrackList(recentTracks.map(recentTracks => (
       {
-        'trackName': track.track.name,
-        'artist': track.track.artists[0].name,
-        'albumImgs': track.track.album.images,
-        'albumImg': track.track.album.images[0].url,
-        'trackId': track.track.id
+        'trackName': recentTracks.track.name,
+        'artist': recentTracks.track.artists[0].name,
+        'albumImgs': recentTracks.track.album.images,
+        'albumImg': recentTracks.track.album.images[0].url,
+        'trackId': recentTracks.track.id
       }
     )))
   }
 
+/*========================= 
+=== RETRIVING USER DATA ====
+===========================*/
+
+// A random string to protect from cross-site request forgery.
+
+  var generateRandomString = function (length) {
+    var text = '';
+    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      for (var i = 0; i < length; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  };
+
   const state = generateRandomString(16);
+
+// A random string to protect from cross-site request forgery.
 
   localStorage.setItem(stateKey, state);
   const scope = 'user-read-recently-played';
@@ -70,6 +85,8 @@ function App() {
     const userUrl = window.location.hash
     let token = window.localStorage.getItem("token")
 
+    // store login details.
+
     if (!token && userUrl) {
       token = userUrl.substring(1).split("&").find(elem => elem.startsWith("access_token")).split("=")[1]
       window.location.hash = ""
@@ -79,6 +96,8 @@ function App() {
     setToken(token)
   }, [])
 
+// remove login details so token and state can not be retrieved.
+
   const logout = () => {
     setToken("")
     window.localStorage.removeItem("token")
@@ -87,8 +106,13 @@ function App() {
 
   }
 
+
+/*========================= 
+===== CREATE TRACKS========
+===========================*/
+  
   const renderTracks = () => {
-    return track.map(track => (
+    return recentTracks.map(track => (
       <div artist={track.artist} key={track.trackId}>
         {track.albumImgs ? <img src={track.albumImg} alt="" className="tracks" /> : <div>No image</div>
         }
@@ -102,21 +126,29 @@ function App() {
   }
 
 
+//Save previously listened to songs so filter works after refresh
+// A possible update is needed to hide previously listened to data after user has left
+
   useEffect(() => {
-    (track.length > 0) ? titleScreen.current.style.display = "none" : titleScreen.current.style.display = "flex"
-  }, [track])
-
-  const filterArtists = (e) => {
-    let newTrackList = []
-    for (let index = 0; index < track.length; index++) {
-      (track[index].artist == e.target.text) ? newTrackList.push(track[index]) : console.log(null)
-    }
-    setPrevState(JSON.stringify(newTrackList))
-    setTrackList(newTrackList)
-  }
+    (recentTracks.length > 0) ? titleScreen.current.style.display = "none" : titleScreen.current.style.display = "flex"
+  }, [recentTracks])
 
 
-  const renderArtists = () => {
+//set interval to check if API response is different from current recentTracks and then update accordingly
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     console.log(searchTracks)
+  //     (recentTracks ==)
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  /*========================= 
+===== CREATE SIDEBAR ========
+===========================*/
+
+   const renderArtists = () => {
     let trackCheck = []
     return <>
       <div className="sidebar" >
@@ -126,10 +158,9 @@ function App() {
         <div className="artists">
           <h3 style={{ color: 'white' }}>Recent Artists:</h3>
 
-          {track.map(track => {
+          {recentTracks.map(track => {
             if (!trackCheck.includes(track.artist)) {
-              console.log(trackCheck)
-              trackCheck.push(track.artist);
+                          trackCheck.push(track.artist);
               return <a key={track.trackId} onClick={filterArtists} style={{ marginTop: "5px", marginBottom: "5px" }} >{track.artist}</a>
             }
           })}
@@ -139,10 +170,23 @@ function App() {
 
   }
 
+   /*========================= 
+========= CREATE FILTER ========
+===========================*/
 
+  const filterArtists = (e) => {
+    let newTrackList = []
+    for (let index = 0; index < recentTracks.length; index++) {
+      (recentTracks[index].artist == e.target.text) ? newTrackList.push(recentTracks[index]) : console.log(null)
+    }
+    setPrevState(JSON.stringify(newTrackList))
+    setTrackList(newTrackList)
+  }
 
-  const titleScreen = useRef()
-
+ 
+   /*========================= 
+========= CREATE APP ========
+===========================*/
 
   return (
     <div className="App">
@@ -153,7 +197,7 @@ function App() {
             <a href={`${url}`}>Login to Spotify</a> : <button onClick={logout}>Logout</button>
           }
           {token ?
-            <button onClick={searchTracks}>Load</button> : console.log(null)
+            <button onClick={searchTracks}>Load</button> : null
           }
         </div>
       </header>
@@ -161,7 +205,7 @@ function App() {
         <div className="recentlyPlayedTracks">
           {renderTracks()}
         </div>
-        {(track.length > 0) ? renderArtists() : null}
+        {(recentTracks.length > 0) ? renderArtists() : null}
       </div>
    
     </div >
